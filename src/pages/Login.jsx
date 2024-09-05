@@ -45,15 +45,15 @@ const Login = () => {
         });
         localStorage.setItem("token", resp2.token);
         const decodeToken = jwt_decode(resp2.token);
-        localStorage.setItem("balance", decodeToken.userExists.balance);
-        localStorage.setItem("plan", decodeToken.userExists.plan);
-        localStorage.setItem("amount", decodeToken.userExists.amount);
+        localStorage.setItem("balance", decodeToken.balance);
+        localStorage.setItem("plan", decodeToken.plan);
+        localStorage.setItem("amount", decodeToken.amount);
         localStorage.setItem(
           "transactions",
-          decodeToken.userExists.transactions
+          decodeToken.transactions
         );
-        localStorage.setItem("userId", decodeToken.userExists._id);
-        localStorage.setItem("email", decodeToken.userExists.email);
+        localStorage.setItem("userId", decodeToken._id);
+        localStorage.setItem("email", decodeToken.email);
         console.log("Decoded Token: ", decodeToken);
         console.log("Resp2.token: ", resp2.token);
         navigate("/home");

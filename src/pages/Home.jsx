@@ -28,7 +28,7 @@ const Home = () => {
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
   const decoded = jwtDecode(token);
-  const [email, setemail] = useState(decoded.userExists.email || "");
+  const [email, setemail] = useState(decoded.email || "");
   const balance = localStorage.getItem("balance");
   const [loading, setLoading] = useState(false);
   console.log(userId);
@@ -36,8 +36,8 @@ const Home = () => {
     const fetchDetails = async () => {
       const token = localStorage.getItem("token");
       const decoded = jwtDecode(token);
-      setemail(decoded.userExists.email);
-      console.log(decoded.userExists.email);
+      setemail(decoded.email);
+      console.log(decoded.email);
 
       const invest = localStorage.getItem("plan");
       const amount = localStorage.getItem("amount");
@@ -53,7 +53,8 @@ const Home = () => {
       setLoading(true); // Start loading
 
       try {
-        const response = await axios.post(`${BASE_URL}/get_balance`, { email });
+        const em = decoded.email
+        const response = await axios.post(`${BASE_URL}/get_balance`, {em });
         console.log(response.data);
         if (response.status !== 200) {
           toast.error("Error fetching balance", { theme: "dark" });

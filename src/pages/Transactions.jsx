@@ -19,7 +19,7 @@ function Transactions({ item, fullscreen }) {
     if (userInfo) {
       try {
         const decoded = jwtDecode(userInfo);
-        setTransactions(decoded.userExists.transactions || []);
+        setTransactions(decoded.transactions || []);
       } catch (error) {
         console.error("Failed to decode token:", error);
       }

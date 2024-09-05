@@ -305,7 +305,9 @@ const Admin = ({ socket }) => {
                   Send
                 </button>
                 <button
-                  onClick={() => setIsChatModalOpen(false)}
+                  onClick={() => {
+                    setChatEmail("")
+                    setIsChatModalOpen(false)}}
                   className="py-2 px-4 bg-red-600 rounded-lg hover:bg-red-500 transition duration-300"
                 >
                   Close

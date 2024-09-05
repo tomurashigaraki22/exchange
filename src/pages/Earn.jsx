@@ -40,41 +40,52 @@ function TransactionPage() {
 
     useEffect(() => {
         const fetchInvestmentDetails = async () => {
-            setLoading(true); // Start loading
-            const formdata = new FormData();
-            const email = localStorage.getItem("email");
-            formdata.append('email', email);
-
-            try {
-                const response = await fetch(`${BASE_URL}/getinvestmentdetails`, {
-                    method: 'POST',
-                    body: formdata
-                });
-
-                if (!response.ok) {
-                    toast.error("Error fetching investment details", { theme: 'dark' });
-                    return;
-                }
-
-                const resp2 = await response.json();
-
-                if (resp2.status === 200) {
-                    console.log("Investment Details: ", resp2);
-                    localStorage.setItem("plan", resp2.plan);
-                    localStorage.setItem("amount", resp2.amount);
-                } else {
-                    toast.error(resp2.message || "No investment details found", { theme: 'dark' });
-                }
-            } catch (error) {
-                console.error("Error: ", error);
-                toast.error("An error occurred while fetching investment details", { theme: 'dark' });
-            } finally {
-                setLoading(false); // End loading
+          setLoading(true); // Start loading
+          const token = localStorage.getItem('token');
+          const decodedToken = jwt_decode(token);
+          const emails = decodedToken.email;
+          localStorage.setItem("email", emails);
+      
+          try {
+            const response = await fetch(`${BASE_URL}/getinvestmentdetails`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',  // Make sure this is included
+              },
+              body: JSON.stringify({
+                email: emails,  // Send the 'email' data correctly
+              }),
+            });
+      
+            // Check if response is not okay
+            if (!response.ok) {
+              console.log("F: ", response);
+              toast.error("Error fetching investment details", { theme: 'dark' });
+              return;
             }
+      
+            // Parse the response data once
+            const data = await response.json();
+            console.log("Investment Details: ", data);
+      
+            // Handle success
+            if (response.status === 200) {
+              localStorage.setItem("plan", data.plan);
+              localStorage.setItem("amount", data.amount);
+            } else {
+              toast.error(data.message || "No investment details found", { theme: 'dark' });
+            }
+          } catch (error) {
+            console.error("Error: ", error);
+            toast.error("An error occurred while fetching investment details", { theme: 'dark' });
+          } finally {
+            setLoading(false); // End loading
+          }
         };
-
+      
         fetchInvestmentDetails();
-    }, []);
+      }, []);
+      
 
     const handleShare = () => {
         if (shares < 20) {

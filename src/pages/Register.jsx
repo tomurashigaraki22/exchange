@@ -15,25 +15,30 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     setLogginin(true);
-
+  
     // Show initial toast and keep its ID
     const id = toast.info("Logging in...", { autoClose: false, type: "info" });
     setToastId(id);
-
+  
     // Remove +1 from the number before sending
-    const unformattedNumber = number.startsWith("+1")
-      ? number.slice(2)
-      : number;
+    const unformattedNumber = number.startsWith("+1") ? number.slice(2) : number;
+  
     try {
-      const response = await axios.post(`${BASE_URL}/signups`, {
-        email,
-        number,
-        password,
+      // Make the fetch request with unformatted number
+      const response = await fetch(`${BASE_URL}/signups`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', // Set the content type to JSON
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          number: unformattedNumber, // Send the unformatted number
+        }),
       });
-      console.log(response);
-
+  
+      // Check if the status is not 201 (created)
       if (response.status !== 201) {
-        console.log(response);
         toast.update(id, {
           render: "Network error...",
           type: "error",
@@ -41,42 +46,46 @@ const Register = () => {
         });
         return;
       }
-      const resp2 = response.data;
+  
+      // Parse the response data
+      const resp2 = await response.json(); // Use response.json() to parse
       console.log({ response, resp2 });
+  
       if (response.status === 201) {
         toast.update(id, {
           render: "Registration Successful",
           type: "success",
           autoClose: 3000,
         });
+  
+        // Handle token and localStorage logic
         localStorage.setItem("token", resp2.token);
+        
         const decodeToken = jwtDecode(resp2.token);
-        console.log(decodeToken);
-        localStorage.setItem("balance", decodeToken.userExists.balance);
-        localStorage.setItem("plan", decodeToken.userExists.plan);
-        localStorage.setItem("amount", decodeToken.userExists.amount);
-        localStorage.setItem(
-          "transactions",
-          decodeToken.userExists.transactions
-        );
-        localStorage.setItem("userId", decodeToken.userExists._id);
-        localStorage.setItem("email", decodeToken.userExists.email);
-
         console.log("Decoded Token: ", decodeToken);
-        console.log("Resp2.token: ", resp2.token);
+  
+        localStorage.setItem("balance", decodeToken.balance);
+        localStorage.setItem("plan", decodeToken.plan);
+        localStorage.setItem("amount", decodeToken.amount);
+        localStorage.setItem("transactions", decodeToken.transactions);
+        localStorage.setItem("userId", decodeToken._id);
+        localStorage.setItem("email", decodeToken.email);
+  
+        // Navigate to the home page
         navigate("/home");
       }
     } catch (error) {
-     
-        toast.update(id, {
-          render: "An error occurred",
-          type: "error",
-          autoClose: 3000,
-        });
+      console.log("Error: ", error);
+      toast.update(id, {
+        render: "An error occurred",
+        type: "error",
+        autoClose: 3000,
+      });
     } finally {
       setLogginin(false);
     }
   };
+  
 
   const handleNumberChange = (e) => {
     const value = e.target.value;
