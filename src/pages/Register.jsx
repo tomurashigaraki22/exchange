@@ -72,6 +72,7 @@ const Register = () => {
           autoClose: 3000,
         });
       } else {
+        console.log("Resp2: ", resp2)
         toast.update(id, {
           render: "An error occurred",
           type: "error",
