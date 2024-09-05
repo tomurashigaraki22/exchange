@@ -65,34 +65,14 @@ const Register = () => {
         console.log("Decoded Token: ", decodeToken);
         console.log("Resp2.token: ", resp2.token);
         navigate("/home");
-      } else if (response.status === 404) {
-        toast.update(id, {
-          render: "No matching credentials",
-          type: "error",
-          autoClose: 3000,
-        });
-      } else {
-        console.log("Resp2: ", resp2)
-        toast.update(id, {
-          render: "An error occurred",
-          type: "error",
-          autoClose: 3000,
-        });
       }
     } catch (error) {
-      if (error.status === 404) {
-        toast.update(id, {
-          render: "No matching credentials",
-          type: "error",
-          autoClose: 3000,
-        });
-      } else {
+     
         toast.update(id, {
           render: "An error occurred",
           type: "error",
           autoClose: 3000,
         });
-      }
     } finally {
       setLogginin(false);
     }
