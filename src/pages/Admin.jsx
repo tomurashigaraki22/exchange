@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { BASE_URL } from "../../config";
 import { toast } from "react-toastify";
 
@@ -10,7 +10,13 @@ const plans = {
   Emerald: [4000, 5000, 6000],
 };
 
-const Admin = () => {
+const Admin = ({ socket }) => {
+  const socketRef = useRef(socket);
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    socketRef.current = socket; // Update the ref with the latest socket instance
+  }, [socket]);
   const [selectedPlan, setSelectedPlan] = useState("Standard");
   const [selectedAmount, setSelectedAmount] = useState(plans["Standard"][0]);
   const [investmentEmail, setInvestmentEmail] = useState("");
@@ -23,6 +29,7 @@ const Admin = () => {
   const [chatEmail, setChatEmail] = useState("");
   const [chats, setChats] = useState([]);
   const [isChatReady, setIsChatReady] = useState(false);
+  const [message, setMessage] = useState("");
 
   const handleUpdateInvestment = () => {
     console.log(
@@ -59,7 +66,6 @@ const Admin = () => {
     setlightningAddress("");
   };
   const userEmail = localStorage.getItem("email");
-  
 
   const handleCheckChat = async () => {
     try {
@@ -86,7 +92,43 @@ const Admin = () => {
       }
     }
   };
-
+  const sendAdminMessage = async () => {
+    try {
+      const response = await axios.post(`${BASE_URL}/new_admin_message`, {
+        message: message,
+        recipientEmail: chatEmail,
+      });
+      console.log(response);
+      if (response.status === 400) {
+        toast.error("An error occoured", { theme: "dark" });
+      }
+    } catch (err) {
+      toast.error("An error occoured", { theme: "dark" });
+      console.log(err);
+    } finally {
+      setMessage("");
+    }
+  };
+  useEffect(() => {
+    const handleNewMessage = (data) => {
+      console.log(data);
+      setChats((prevChats) => [...prevChats, data]);
+    };
+    socket.on("adminMessage", handleNewMessage);
+    return () => {
+      socket.off("adminMessage", handleNewMessage);
+    };
+  }, [socket]);
+  useEffect(() => {
+    if (isChatModalOpen) {
+      setTimeout(() => {
+        if (messagesEndRef.current) {
+          messagesEndRef.current.scrollTop =
+            messagesEndRef.current.scrollHeight;
+        }
+      }, 0);
+    }
+  }, [isChatModalOpen, chats]);
   return (
     <div className="min-h-screen bg-gray-900 text-white p-8">
       <div className="max-w-lg mx-auto space-y-12">
@@ -233,12 +275,15 @@ const Admin = () => {
               <h2 className="text-xl font-semibold mb-4">
                 Chat with {chatEmail}
               </h2>
-              <div className="bg-gray-700 p-4 rounded-lg h-48 overflow-y-scroll mb-4">
+              <div
+                className="bg-gray-700 p-4 rounded-lg h-48 overflow-y-scroll mb-4"
+                ref={messagesEndRef}
+              >
                 <p className="text-sm text-gray-400">
                   [Chat history with {chatEmail} will appear here...]
                   {chats.length > 0 &&
-                    chats.map((chat) => (
-                      <p className="text-gray-300" key={chat.sender}>
+                    chats.map((chat, index) => (
+                      <p className="text-gray-300" key={index}>
                         {chat.sender === "You"
                           ? "Client: " + chat.message
                           : "You: " + chat.message}
@@ -249,11 +294,13 @@ const Admin = () => {
               <input
                 placeholder="Type a message..."
                 className="w-full p-4 mb-4 bg-gray-700 rounded-lg border border-gray-600 focus:outline-none"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
               />
               <div className="flex justify-between">
                 <button
                   className="py-2 px-4 bg-blue-600 rounded-lg hover:bg-blue-500 transition duration-300"
-                  onClick={setAdminMessage}
+                  onClick={sendAdminMessage}
                 >
                   Send
                 </button>

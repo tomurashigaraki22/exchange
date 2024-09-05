@@ -51,7 +51,6 @@ const Settings = ({ socket }) => {
         const response = await axios.get(
           `${BASE_URL}/messages?userId=${userId}`
         );
-        console.log(response);
         if (response.status === 200) {
           response.data.allMessages.forEach((message) => {
             setMessageArray((prevMessages) => [...prevMessages, message]);
@@ -63,6 +62,8 @@ const Settings = ({ socket }) => {
         } else {
           console.log(err);
         }
+      } finally {
+        setValue("");
       }
     };
     fetchMessages();
@@ -72,16 +73,10 @@ const Settings = ({ socket }) => {
       console.log(data);
       setMessageArray((prevMessages) => [...prevMessages, data]);
     };
-
-    socket.on("newUserMessage", handleNewMessage);
-
-    // Cleanup function to remove the event listener
-    return () => {
-      socket.off("newUserMessage", handleNewMessage);
-    };
+    socket.on("newMessage", handleNewMessage);
   }, [socket]);
+
   const sendMessage = async () => {
-    console.log({ email, value });
     try {
       const response = await axios.post(`${BASE_URL}/new_message`, {
         senderEmail: email,
