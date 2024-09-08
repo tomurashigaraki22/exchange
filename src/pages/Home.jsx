@@ -32,16 +32,18 @@ const Home = ({ socket }) => {
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
   const decoded = jwtDecode(token);
-  const [email, setemail] = useState(decoded.userExists.email || "");
+  const [email, setemail] = useState(decoded?.email || "");
   const [balance, setBalance] = useState(
     localStorage.getItem("balance") || 2877
   );
+  console.log(decoded);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     const fetchDetails = async () => {
       const token = localStorage.getItem("token");
-      const decoded = jwtDecode(token);
-      setemail(decoded.userExists.email);
+      const decoded = await jwtDecode(token);
+      setemail(decoded?.email);
+      console.log(decoded);
       const invest = localStorage.getItem("plan");
       const amount = localStorage.getItem("amount");
       const investm = [
@@ -68,6 +70,7 @@ const Home = ({ socket }) => {
         const resp = response.data;
 
         if (response.status === 200) {
+          console.log(response);
           localStorage.setItem("balance", resp.balance);
         } else {
           toast.error(resp.message || "No balance found", { theme: "dark" });

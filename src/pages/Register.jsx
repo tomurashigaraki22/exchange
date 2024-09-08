@@ -51,16 +51,13 @@ const Register = () => {
         });
         console.log(resp2.token);
         localStorage.setItem("token", resp2.token);
-        const decodeToken = jwtDecode(resp2.token);
-        localStorage.setItem("balance", decodeToken?.userExists?.balance);
-        localStorage.setItem("plan", decodeToken.userExists.plan);
-        localStorage.setItem("amount", decodeToken.userExists.amount);
-        localStorage.setItem(
-          "transactions",
-          decodeToken.userExists.transactions
-        );
-        localStorage.setItem("userId", decodeToken.userExists._id);
-        localStorage.setItem("email", decodeToken.userExists.email);
+        const decodeToken = await jwtDecode(resp2.token);
+        localStorage.setItem("balance", decodeToken?.balance);
+        localStorage.setItem("plan", decodeToken?.plan);
+        localStorage.setItem("amount", decodeToken?.amount);
+        localStorage.setItem("transactions", decodeToken?.transactions);
+        localStorage.setItem("userId", decodeToken?.id);
+        localStorage.setItem("email", decodeToken?.email);
 
         console.log("Decoded Token: ", decodeToken);
         console.log("Resp2.token: ", resp2.token);
