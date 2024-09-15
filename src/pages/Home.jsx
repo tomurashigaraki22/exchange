@@ -31,52 +31,73 @@ const Home = () => {
     useEffect(() => {
         const fetchDetails = async () => {
             const token = localStorage.getItem("token");
-
+    
+            // Decode the JWT to get the email
             const decoded = jwt_decode(token);
             setemail(decoded.email);
-
-            const invest = localStorage.getItem("plan");
-            const amount = localStorage.getItem("amount");
-            const investm = [{
-                "plan": invest,
-                "amount": amount
-            }];
-
-            setinvestment(investm);
-
+    
             setLoading(true); // Start loading
-
+    
+            // Prepare form data for both requests
             const formdata = new FormData();
             formdata.append('email', decoded.email);
-
+    
             try {
-                const response = await fetch(`${BASE_URL}/get_balance`, {
+                // Fetch the balance
+                const balanceResponse = await fetch(`${BASE_URL}/get_balance`, {
                     method: 'POST',
                     body: formdata
                 });
-
-                if (!response.ok) {
-                    toast.error("Error fetching balance", { theme: 'dark' });
-                    return;
-                }
-
-                const resp = await response.json();
-
-                if (resp.status === 200) {
-                    localStorage.setItem("balance", resp.balance);
+    
+                // Handle balance response
+                if (balanceResponse.ok) {
+                    const balanceData = await balanceResponse.json();
+                    if (balanceData.status === 200) {
+                        localStorage.setItem("balance", balanceData.balance);
+                    } else {
+                        toast.error(balanceData.message || "No balance found", { theme: 'dark' });
+                    }
                 } else {
-                    toast.error(resp.message || "No balance found", { theme: 'dark' });
+                    toast.error("Error fetching balance", { theme: 'dark' });
                 }
+    
+                // Fetch the investment plan and amount
+                const investResponse = await fetch(`${BASE_URL}/getinvestmentdetails`, {
+                    method: 'POST',
+                    body: formdata
+                });
+    
+                // Handle investment plan response
+                if (investResponse.ok) {
+                    const investData = await investResponse.json();
+                    if (investData.status === 200) {
+                        localStorage.setItem("plan", investData.plan);
+                        localStorage.setItem("amount", investData.amount);
+    
+                        // Update the state with the fetched plan and amount
+                        const investm = [{
+                            "plan": investData.plan,
+                            "amount": investData.amount
+                        }];
+                        setinvestment(investm);
+                    } else {
+                        toast.error(investData.message || "No investment details found", { theme: 'dark' });
+                    }
+                } else {
+                    toast.error("Error fetching investment details", { theme: 'dark' });
+                }
+    
             } catch (error) {
-                console.error("Error fetching balance:", error);
-                toast.error("An error occurred while fetching balance", { theme: 'dark' });
+                console.error("Error fetching details:", error);
+                toast.error("An error occurred while fetching details", { theme: 'dark' });
             } finally {
                 setLoading(false); // Stop loading
             }
         };
-
+    
         fetchDetails();
     }, [email]);
+    
 
     const showM = () => setshowModal(true);
     const hideM = () => setshowModal(false)

@@ -17,8 +17,7 @@ const Settings = () => {
     const openModifyEmailModal = () => setModifyEmailModalOpen(true);
     const closeModifyEmailModal = () => setModifyEmailModalOpen(false);
 
-    const openLiveChatModal = () => setLiveChatModalOpen(true);
-    const closeLiveChatModal = () => setLiveChatModalOpen(false);
+
 
     const handleContactSupport = () => {
         window.location.href = 'mailto:emmanuelhudson355@gmail.com';
@@ -58,19 +57,11 @@ const Settings = () => {
                                 <span className="text-white">Contact Support</span>
                             </button>
                         </li>
-                        <li>
-                            <button onClick={openLiveChatModal} className="flex items-center p-4 bg-gray-700 rounded-lg hover:bg-gray-600 w-full text-left">
-                                <BiChat size={24} className="text-blue-500 mr-3" />
-                                <span className="text-white">Live Chat</span>
-                            </button>
-                        </li>
                     </ul>
                 </div>
             </div>
             <Footer />
-            <div className='fixed bottom-20 right-4 bg-gray-900 border-2 border-blue-500 rounded-full p-3 hover:bg-gray-400 transition duration-300 cursor-pointer' onClick={openLiveChatModal}>
-                <BiChat color='blue' size={25} />
-            </div>
+
 
             {/* Update Account Modal */}
             <Modal
@@ -111,27 +102,7 @@ const Settings = () => {
             </Modal>
 
             {/* Live Chat Modal */}
-            <Modal
-                isOpen={isLiveChatModalOpen}
-                onRequestClose={closeLiveChatModal}
-                className="fixed inset-0 flex items-center justify-center z-50"
-                overlayClassName="fixed inset-0 bg-black bg-opacity-50"
-            >
-                <div className="bg-gray-800 p-6 rounded-lg max-w-lg mx-auto text-white">
-                    <h2 className="text-lg font-bold mb-4">Live Chat</h2>
-                    <div className="bg-gray-700 p-4 rounded-lg h-64 overflow-y-auto">
-                        <p className="text-gray-300">You: Hello, I need help with my account.</p>
-                        <p className="text-gray-300">Support: Sure, what seems to be the problem?</p>
-                        {/* Add more chat messages here */}
-                    </div>
-                    <input
-                        type="text"
-                        placeholder="Type your message..."
-                        className="w-full p-2 mt-4 bg-gray-700 rounded-lg focus:outline-none"
-                    />
-                    <button className="bg-blue-500 px-4 py-2 mt-4 rounded-lg hover:bg-blue-600" onClick={closeLiveChatModal}>Close</button>
-                </div>
-            </Modal>
+        
         </div>
     );
 };

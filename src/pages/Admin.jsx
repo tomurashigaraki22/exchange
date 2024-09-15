@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { BASE_URL } from '../../config';
 
 const plans = {
     Standard: [100, 200, 300],
@@ -20,28 +21,136 @@ const Admin = () => {
     const [chatEmail, setChatEmail] = useState('');
     const [isChatReady, setIsChatReady] = useState(false);
 
-    const handleUpdateInvestment = () => {
-        console.log('Investment updated:', selectedPlan, 'Amount:', selectedAmount, 'for user:', investmentEmail);
-        setInvestmentEmail('');
-        setSelectedPlan('Standard');
-        setSelectedAmount(plans['Standard'][0]);
+    const handleUpdateInvestment = async () => {
+        try {
+            console.log('Investment updated:', selectedPlan, 'Amount:', selectedAmount, 'for user:', investmentEmail);
+    
+            // Check if email, selected plan, and amount are provided
+            if (!investmentEmail || !selectedPlan || !selectedAmount) {
+                window.alert("Please provide email, plan, and amount.");
+                return;
+            }
+    
+            // Create FormData to send to the backend
+            const formData = new FormData();
+            formData.append('email', investmentEmail);
+            formData.append('plan', selectedPlan);
+            formData.append('amount', selectedAmount);
+    
+            // Make POST request to update the investment plan
+            const response = await fetch(`${BASE_URL}/update_investment_plan`, {
+                method: 'POST',
+                body: formData
+            });
+    
+            // Check if the response is ok
+            if (!response.ok) {
+                throw new Error('Failed to update investment plan');
+            }
+    
+            const data = await response.json();
+    
+            // Check if the update was successful
+            if (data.status === 200) {
+                window.alert("Investment plan updated successfully!");
+            } else {
+                window.alert(`Failed to update investment plan: ${data.message}`);
+            }
+    
+            // Reset the fields
+            setInvestmentEmail('');
+            setSelectedPlan('Standard');
+            setSelectedAmount(plans['Standard'][0]);
+    
+        } catch (error) {
+            console.error('Error updating investment:', error);
+            window.alert("An error occurred. Please try again.");
+        }
     };
+    
 
     useEffect(() => {
         setIsChatReady(false)
     }, [])
 
-    const handleUpdateBalance = () => {
-        console.log('Balance updated:', balance, 'for user:', balanceEmail);
-        setBalance('');
-        setBalanceEmail('');
+    const handleUpdateBalance = async () => {
+        try {
+            console.log('Balance updated:', balance, 'for user:', balanceEmail);
+            
+            // Creating FormData object and appending email and amount
+            const formdata = new FormData();
+            formdata.append("email", balanceEmail);
+            formdata.append("amount", balance);
+            
+            // Sending the request to the server
+            const response = await fetch(`${BASE_URL}/update_balance`, {
+                method: 'POST',
+                body: formdata,
+            });
+    
+            // Checking if the response is not OK
+            if (!response.ok) {
+                throw new Error('Failed to update balance');
+            }
+    
+            // Parsing the JSON response
+            const resp2 = await response.json();
+            
+            // Checking if the update was successful
+            if (resp2.status === 200) {
+                window.alert("Balance updated successfully!");
+            } else {
+                window.alert("Failed to update balance. Please try again.");
+            }
+    
+            // Resetting input fields
+            setBalance('');
+            setBalanceEmail('');
+        } catch (error) {
+            console.error('Error updating balance:', error);
+            window.alert("Something went wrong. Please try again later.");
+        }
     };
+    
 
-    const handleUpdateEmail = () => {
-        console.log('Lightning Address updated for user:', email, 'to:', lightningAddress);
-        setEmail('');
-        setlightningAddress('');
+    const handleUpdateEmail = async () => {
+        try {
+            console.log('Lightning Address updated for user:', 'imma12@gmail.com', 'to:', lightningAddress);
+            
+            // Create form data to send to the backend
+            const formData = new FormData();
+            formData.append('email', "imma12@gmail.com");
+            formData.append('address', lightningAddress);
+    
+            // Make the POST request to update the lightning address
+            const response = await fetch(`${BASE_URL}/updateaddress`, {
+                method: 'POST',
+                body: formData
+            });
+    
+            // Check if the response is OK
+            if (!response.ok) {
+                throw new Error('Failed to update the lightning address');
+            }
+    
+            const data = await response.json();
+    
+            // Handle the response status
+            if (data.message === "Address updated successfully.") {
+                window.alert("Lightning address updated successfully!");
+            } else {
+                window.alert("Failed to update the lightning address. Please try again.");
+            }
+    
+            // Reset the input fields
+            setEmail('');
+            setLightningAddress('');
+        } catch (error) {
+            console.error('Error updating lightning address:', error);
+            window.alert("An error occurred. Please try again.", error);
+        }
     };
+    
 
     const handleCheckChat = () => {
         console.log('Checking chat readiness for email:', chatEmail);

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { BASE_URL } from '../../config';
+import jwt_decode from 'jwt-decode'
 
 const Register = () => {
     const [email, setEmail] = useState('');
