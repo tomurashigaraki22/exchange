@@ -189,7 +189,7 @@ function TransactionPage() {
                                         </div>
                                     </div>
                                 </div>
-                                <div className="flex justify-center mt-4">
+                                <div className="flex flex-row items-center justify-center space-x-10 mt-4 ">
                                     {shares === 20 && !claimed && (
                                         <div className="text-center">
                                             <button onClick={handleClaim} className="flex items-center justify-center w-16 h-16 bg-green-600 text-white rounded-full shadow-lg mb-2">
