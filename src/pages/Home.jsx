@@ -140,6 +140,10 @@ const Home = () => {
             });
         }
     }
+
+    const gotoAgent = async () => {
+        setshowModal(true)
+    }
     
 
     return (
@@ -167,9 +171,9 @@ const Home = () => {
                     <div className="flex flex-row items-center justify-between w-full space-x-3 mt-4">
                         {[
                             { icon: <BsArrowUp color="white" size={21} />, text: "Deposit", action: openModal },
-                            { icon: <BsArrowDown color="white" size={21} />, text: "Withdraw" },
-                            { icon: <CgCreditCard color="white" size={21} />, text: "Cards" },
-                            { icon: <LuArrowUpDown color="white" size={21} />, text: "Exchange" },
+                            { icon: <BsArrowDown color="white" size={21} />, text: "Withdraw", action: gotoAgent},
+                            { icon: <CgCreditCard color="white" size={21} />, text: "Cards", action: gotoAgent },
+                            { icon: <LuArrowUpDown color="white" size={21} />, text: "Exchange", action: gotoAgent },
                         ].map((item, index) => (
                             <div key={index} className="w-1/4 flex flex-col items-center" onClick={item.action}>
                                 <div className="border border-darkGreen bg-darkGreen p-2 rounded-lg flex items-center justify-center w-11 h-11">
